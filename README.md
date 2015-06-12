@@ -10,7 +10,7 @@ Example:
 import zbar
 image = read_image_into_numpy_array(...) # get an image into a numpy array
 scanner = zbar.Scanner()
-results = image.scan()
+results = scanner.scan(image)
 for result in results:
     print(result.type, result.data, result.quality, result.location)
 ```

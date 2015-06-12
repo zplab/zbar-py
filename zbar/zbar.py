@@ -148,6 +148,13 @@ class Scanner(object):
         del self._scanner
 
     def scan(self, image):
+        """Scan an image and return a list of barcodes identified.
+        Each barcode is a Symbol named-tuple, with 'type', 'data', 'quality',
+        and 'position' attributes. 'type' refers to the barcode's type (e.g.
+        'QR-Code'), 'data' is a bytes instance containing the barcode payload,
+        'quality' is a numerical score, and 'position' is a list of (x, y)
+        indices into the image that define the barcode's location.
+        """
         image = numpy.asarray(image)
         if not image.dtype == numpy.uint8 and image.ndim == 2:
             raise ValueError('Image must be 2D uint8 type')
