@@ -1,4 +1,7 @@
+import distutils.command
+import distutils.command.build_ext
 import distutils.core
+import distutils.errors
 
 SRCS = '''Source/zbar/decoder.c
 Source/zbar/decoder/code128.c
@@ -35,12 +38,38 @@ zbar = distutils.core.Extension('zbar._zbar',
         ('HAVE_INTTYPES_H', None),
         ('ZBAR_VERSION_MAJOR', 0),
         ('ZBAR_VERSION_MINOR', 10),
-        ('NO_STATS', None)],
-    libraries=['iconv']
+        ('NO_STATS', None)]
 )
 
-distutils.core.setup(name = 'zbar',
-        version = '1.0',
-        description = 'zbar package',
-        ext_modules = [zbar],
-        packages = ['zbar'])
+class BuildExt(distutils.command.build_ext.build_ext):
+    @staticmethod
+    def has_lib(compiler, libname):
+        """Return a boolean indicating whether a linker flag name is supported on
+        the specified compiler.
+        """
+        import tempfile
+        with tempfile.NamedTemporaryFile('w', suffix='.cpp') as f:
+            f.write('int main (int argc, char **argv) { return 0; }')
+            try:
+                compiler.link_executable(compiler.compile([f.name]), "aksdfjhawkdjlfhkasdjhfkljasdhfkjahsdf", libraries=[libname])
+            except (distutils.errors.CompileError, distutils.errors.LinkError):
+                return False
+        return True
+
+    """A custom build extension for adding compiler-specific options."""
+    def build_extensions(self):
+        ldflags = []
+        if self.has_lib(self.compiler, 'iconv'):
+            ldflags.append('-liconv')
+        for ext in self.extensions:
+            ext.extra_link_args = ldflags
+            distutils.command.build_ext.build_ext.build_extensions(self)
+
+distutils.core.setup(
+    name = 'zbar',
+    version = '1.0',
+    description = 'zbar package',
+    ext_modules = [zbar],
+    packages = ['zbar'],
+    cmdclass={'build_ext': BuildExt}
+ )
