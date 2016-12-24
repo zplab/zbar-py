@@ -10,6 +10,7 @@
 #    Camera will take another pic. When done press q and enter to quit camera mode
 # 3) You will get reading on the terminal
 #
+# Note: http://www.makebarcode.com -- Nice website to learn Barcodes
 
 
 import zbar
@@ -22,6 +23,8 @@ import pygame.camera
 import time
 from pygame.locals import *
 
+import requests
+import json
 #-------------------------------------------------------------------------
 # Get the pic
 #-------------------------------------------------------------------------
@@ -30,7 +33,7 @@ print()
 pygame.camera.init()
 pygame.camera.list_cameras()
 # Cam 
-cam = pygame.camera.Camera("/dev/video0", (640, 480))
+cam = pygame.camera.Camera("/dev/video0 ", (640, 480))
 
 screen = pygame.display.set_mode(cam.get_size())
 print('Get a pic of barcode. If pic doesnot look good, then press enter at terminal. \
@@ -77,6 +80,8 @@ print("(height,width) = {}".format(gray.shape))
 # Detect all -- sometimes, it shows wrong codes
 scanner = zbar.Scanner()
 
+products=None
+
 results = scanner.scan(gray)
 if results==[]:
     print("No Barcode found.")
@@ -85,4 +90,38 @@ else:
         print(result.type, result.data, result.quality)
         #print(result.type, result.data, result.quality,result.position)
         #print("{}".format(results))
+    products=results
+
+#-------------------------------------------------------------------------
+# Get product Name, Product manufacturer
+#-------------------------------------------------------------------------
+
+
+if products:
     
+    for product in products:
+        # API address
+        data_int=int(product.data)
+        print('Requesting name for product GTID {0:013d}'.format(data_int))
+        url = 'http://pod.opendatasoft.com/api/records/1.0/search/?dataset=pod_gtin&q={0:013d}&facet=gpc_s_nm&facet=brand_nm&facet=owner_nm&facet=gln_nm&facet=prefix_nm'.format(data_int)
+
+        r = requests.get(url)
+        print('Request Status:',r.status_code)
+        if r.status_code ==200:
+            #print(r.text)
+            res=json.loads(r.text)
+            #print(res)
+            records=res['records']
+            if res['nhits'] == 0:
+                print('Product Not found')
+            else:
+                print('NumHits:', res['nhits'] )
+                for record in records:
+                    #print(record)
+                    data_fields=record['fields']
+                    print('Product Name:', data_fields['gtin_nm'])
+                    print('Product GTID:', data_fields['gtin_cd'])
+                    print('Company Name:', data_fields['brand_nm'])
+        else:
+            print('error requesting API')
+        
