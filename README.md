@@ -10,7 +10,8 @@ Zbar is built as a python extension, so no external dependencies are required. B
 ## Prerequisites:
 * libiconv -- for building zbar-py
 * numpy -- for running zbar-py
-* scipy -- for testing zbar-py
+* scipy -- for testing zbar-py with image and webcam
+* pygame -- for testing zbar-py with webcam
 
 ## Installing and testing
 Make sure that you have libiconv on your build env.
@@ -21,12 +22,19 @@ $ python setup.py install
 
 ```
 
-For testing, Install the prequisites then goto zbar_testing directory, run
+For testing, Install the prequisites then goto zbar_testing/1_Testing_barcodes_images directory, run
 
 ```bash
 $ python zbar_test.py
 
 ```
+For testing using cam, install the prerequisites the goto zbar_testing/2_Testing_barcodes_cam, Follow instructions in zbar_test.py
+```bash
+$ python zbar_test.py
+
+```
+
+Note: Make sure that you get a clear pic with webcam. Your laptop camera may not click good enough pics.
 
 ## Example:
 ```python
@@ -35,5 +43,5 @@ image = read_image_into_numpy_array(...) # get an image into a numpy array
 scanner = zbar.Scanner()
 results = scanner.scan(image)
 for result in results:
-    print(result.type, result.data, result.quality, result.location)
+    print(result.type, result.data, result.quality, result.position)
 ```
