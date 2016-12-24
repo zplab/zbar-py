@@ -34,7 +34,9 @@ $ python zbar_test.py
 
 ```
 
-Note: Make sure that you get a clear pic with webcam. Your laptop camera may not click good enough pics.
+Note: 
+* Make sure that you get a clear pic with webcam. Your laptop camera may not click good enough pics.
+* Other packages for using cam to take pics are opencv and simplecv. However, opencv has python3 extension -- no deb package available, so you will have to build it. Building opencv is little difficult, requires lots of dependencies. And, simplecv has no extension for python3 till date.
 
 ## Example:
 ```python
