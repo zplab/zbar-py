@@ -13,8 +13,8 @@ Zbar is built as a python extension, so no external dependencies are required. B
 * scipy -- for testing zbar-py
 
 ## Installing and testing
-Make sure that you have libiconv on your build env
-Do
+Make sure that you have libiconv on your build env.
+Then Do
 
 ```bash
 $ python setup.py install
@@ -25,7 +25,8 @@ For testing, Install the prequisites then goto zbar_testing directory, run
 
 ```bash
 $ python zbar_test.py
-'''
+
+```
 
 ## Example:
 ```python
