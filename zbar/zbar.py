@@ -171,7 +171,7 @@ class Scanner(object):
             sym_name = str(_ZB.zbar_get_symbol_name(sym_type), 'ascii')
             sym_data_ptr = _ZB.zbar_symbol_get_data(symbol)
             sym_data_len = _ZB.zbar_symbol_get_data_length(symbol)
-            sym_data = ctypes.string_at(sym_data_ptr, sym_data_len)
+            sym_data = ctypes.string_at(sym_data_ptr, sym_data_len).decode("utf-8")
             sym_quality = _ZB.zbar_symbol_get_quality(symbol)
             sym_loc = []
             for i in range(_ZB.zbar_symbol_get_loc_size(symbol)):
