@@ -53,14 +53,14 @@ zbar = Extension('zbar._zbar',
     libraries=LIBS
 )
 
-setup(name='zbar',
-        version='1.1',
+setup(name='zbar-py',
+        version='1.2rc1',
         description='zbar package',
         url='https://github.com/rounaksingh/zbar-py',
         author='Zachary Pincus, Rounak Singh',
         author_email='zpincus@gmail.com, rounaksingh17@gmail.com',
         ext_modules=[zbar],
         packages=['zbar'],
-        install_requires=['numpy'],
+        install_requires=['numpy','scipy'],
         license='MIT',)
 

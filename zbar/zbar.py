@@ -24,6 +24,7 @@
 
 import ctypes
 import numpy
+import scipy.misc
 import sys
 import os.path
 import glob
@@ -182,3 +183,31 @@ class Scanner(object):
             symbol = _ZB.zbar_symbol_next(symbol)
         assert len(symbols) == num_symbols
         return symbols
+
+    def rgb2gray(self,rgb):
+        '''
+            converts rgb to grayscale image
+            rgb is of type numpy.ndarray
+        '''
+        return numpy.dot(rgb[...,:3], [0.299, 0.587, 0.114])
+
+    def scan_from_image(self,image_filename):
+        '''
+            It scans barcode using a image (png,jpg,tiff,etc. are supported).
+            Image should be a greyscale or RGB.
+            Take a filename, if file not found then throws exception FileNotFoundError.
+            Returns barcode if successful, otherwise returns empty list
+        '''
+        image=scipy.misc.imread(image_filename)
+        
+        if(len(image.shape)<3):
+            #Image is grayscale
+            pass
+        elif len(image.shape)==3:
+            #Image is RGB
+            image = self.rgb2gray(image)
+        else:
+            raise ValueError('Please enter a Greyscale or RGB image.')
+
+        image = image.astype(numpy.uint8)
+        return self.scan(image)
