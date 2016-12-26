@@ -13,28 +13,38 @@
 
 
 import zbar
-import numpy
-from scipy.misc import *
-import os
 
 import pygame
 import pygame.camera
 import time
 from pygame.locals import *
 
-#-------------------------------------------------------------------------
-# Get the pic
-#-------------------------------------------------------------------------
+#----------------------------------------------------------------------------------
+# Get the pic -- this will become a builtin class for zbar-py in future
+# To get pic from cam or video, packages like opencv or simplecv can also be used.
+#----------------------------------------------------------------------------------
+
+# This might vary depending on your PC. Try to use a good camera. 
+# Laptop builtin Webcam sometimes doesnot work good.
+cam_name='/dev/video1'  
+
 pygame.init()
-print()
 pygame.camera.init()
 pygame.camera.list_cameras()
 # Cam 
-cam = pygame.camera.Camera("/dev/video0", (640, 480))
+cam = pygame.camera.Camera(cam_name, (640, 480))
 
 screen = pygame.display.set_mode(cam.get_size())
-print('Get a pic of barcode. If pic doesnot look good, then press enter at terminal. \
-       Camera will take another pic. When done press q and enter to quit camera mode')
+print('''
+=============
+Instructions:
+=============
+Get a good enough pic of barcode.
+If pic doesnot look good, then press enter at terminal.
+Camera will take another pic.
+When done press q and enter to quit camera mode
+''')
+
 while True:
     cam.start()
     time.sleep(0.5)  # You might need something higher in the beginning
@@ -51,33 +61,12 @@ pygame.display.quit()
 #-------------------------------------------------------------------------
 # Read the Barcode
 #-------------------------------------------------------------------------
-def rgb2gray(rgb):
-    return numpy.dot(rgb[...,:3], [0.299, 0.587, 0.114])
-
 test_filename='barcode.jpg'
 
-image = imread(test_filename) # get an image into a numpy array
-gray = rgb2gray(image)
-gray = gray.astype(numpy.uint8)
-imsave('barcode_gray.png', gray)
-
-print("{}".format(type(gray)))
-
-print("(height,width) = {}".format(gray.shape))
-
-# Detect EAN13 only -- Works well
-#scanner = zbar.Scanner([('ZBAR_EAN13', 'ZBAR_CFG_ENABLE', 1),('ZBAR_EAN13', 'ZBAR_CFG_POSITION', 1)])
-
-# Detect ISBN13 only -- Works well
-#scanner = zbar.Scanner([('ZBAR_ISBN13', 'ZBAR_CFG_ENABLE', 1),('ZBAR_ISBN13', 'ZBAR_CFG_POSITION', 1)])
-
-# Detect EAN8 only -- Works well
-#scanner = zbar.Scanner([('ZBAR_EAN8', 'ZBAR_CFG_ENABLE', 1),('ZBAR_EAN8', 'ZBAR_CFG_POSITION', 1)])
-
-# Detect all -- sometimes, it shows wrong codes
+# Detect all
 scanner = zbar.Scanner()
 
-results = scanner.scan(gray)
+results = scanner.scan_from_image(test_filename)
 if results==[]:
     print("No Barcode found.")
 else:
