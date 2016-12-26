@@ -1,7 +1,5 @@
-import distutils.command
-import distutils.command.build_ext
-import distutils.core
-import distutils.errors
+from setuptools import setup
+from setuptools.extension import Extension
 import os
 import ctypes
 import ctypes.util
@@ -38,7 +36,7 @@ def has_libc_iconv():
 # (iconv is in glibc, but  on OS X one needs a stanalone libiconv)
 LIBS = [] if has_libc_iconv() else ['iconv']
 
-zbar = distutils.core.Extension('zbar._zbar',
+zbar = Extension('zbar._zbar',
     sources=['zbar/_zbar.c'] + SRCS,
     include_dirs=INCLUDE,
     define_macros=[
@@ -55,8 +53,14 @@ zbar = distutils.core.Extension('zbar._zbar',
     libraries=LIBS
 )
 
-distutils.core.setup(name='zbar',
-        version='1.0',
+setup(name='zbar',
+        version='1.1',
         description='zbar package',
+        url='https://github.com/rounaksingh/zbar-py',
+        author='Zachary Pincus, Rounak Singh',
+        author_email='zpincus@gmail.com, rounaksingh17@gmail.com',
         ext_modules=[zbar],
-        packages=['zbar'])
+        packages=['zbar'],
+        install_requires=['numpy'],
+        license='MIT',)
+
