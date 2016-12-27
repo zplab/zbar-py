@@ -9,6 +9,15 @@ conversions:
 Written by Rounak Singh
 '''
 
+import numpy
+
+def rgb2gray(rgb):
+    '''
+        converts rgb to grayscale image
+        rgb is of type numpy.ndarray
+    '''
+    return numpy.dot(rgb[...,:3], [0.299, 0.587, 0.114])
+
 def ean8_to_ean13(ean8):
     '''
     Takes unicode EAN-8. 

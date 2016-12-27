@@ -1,7 +1,7 @@
 # zbar-py
 
 ## Introduction
-Authors: [Zachary Pincus](http://zplab.wustl.edu) <zpincus@gmail.com> , [Rounak Singh] <rounaksingh17@gmail.com> 
+Authors: [Zachary Pincus](http://zplab.wustl.edu) <zpincus@gmail.com>
 
 A Python module (compatible with both Python 2.7 and 3+) that provides an interface to the [zbar](http://zbar.sourceforge.net) bar-code reading library, which can read most barcode formats as well as QR codes. Input images must be 2D numpy arrays of type uint8, in other words 2D Greyscale.
 
@@ -9,57 +9,23 @@ Zbar is built as a python extension, so no external dependencies are required. B
 
 ## Prerequisites:
 * libiconv -- for building zbar-py
-* numpy, scipy -- for running zbar-py
-* pygame -- for testing zbar-py with webcam
+* numpy  -- for running zbar-py
+* scipy, pygame -- for examples
 
 ## Installing
-* For linux(tested):
-
-```bash
-$ pip install zbar-py
-```
-
-* For other plateforms (windows/mac):
-
-First, try PyPI installation using above command. Otherwise, you will have to use setuptools, it should install. Not tested yet.
+You will have to use setuptools, it should install. Not tested yet.
 
 Make sure that you have libiconv on your build env.
 Then Do
-
 ```bash
-$ python setup.py install
-
+   $ python setup.py install
 ```
-
-## Testing
-* Test with Images:
-
-For testing, Install the prequisites then goto zbar_testing/1_Testing_barcodes_images directory, run
-
-```bash
-$ python zbar_test.py
-
-```
-
-* Test with Webcam:
-For testing using cam, install the package pygame, then goto zbar_testing/2_Testing_barcodes_cam, Follow instructions in zbar_test.py
-
-```bash
-$ python zbar_test.py
-
-```
-
-Note: 
-
-* Make sure that you get a clear pic with webcam. Your laptop camera may not click good enough pics.
-
-* Other packages for using cam to take pics are opencv and simplecv. However, opencv has python3 extension -- no deb package available, so you will have to build it. Building opencv is little difficult, requires lots of dependencies. And, simplecv has no extension for python3 till date.
 
 ## Examples:
 
-Simple examples are mentioned below. More examples can be found [here](https://github.com/rounaksingh/zbar-py/tree/master/zbar_testing)
+Simple examples are mentioned below. More examples can be found in examples directory.
 
-* With image file. Reads most types of Barcode
+* With image file. Reads most types of Barcodes
 
 ```python
 import zbar
@@ -109,3 +75,4 @@ elif valid == False:
 elif valid == None:
     print('Barcode is not read properly')
 ```
+
