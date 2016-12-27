@@ -10,11 +10,9 @@ Zbar is built as a python extension, so no external dependencies are required. B
 ## Prerequisites:
 * libiconv -- for building zbar-py
 * numpy  -- for running zbar-py
-* scipy, pygame -- for examples
+* pygame -- for examples only
 
 ## Installing
-You will have to use setuptools, it should install. Not tested yet.
-
 Make sure that you have libiconv on your build env.
 Then Do
 ```bash
@@ -23,7 +21,7 @@ Then Do
 
 ## Examples:
 
-Simple examples are mentioned below. More examples can be found in examples directory.
+More examples can be found in examples directory.
 
 * With 2D numpy array. Reads most types of Barcode
 
@@ -47,6 +45,4 @@ if valid == True:
     print('code is valid')
 elif valid == False:
     print('code is invalid')
-elif valid == None:
-    print('Barcode is not read properly')
 ```
