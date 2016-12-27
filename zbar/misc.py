@@ -18,6 +18,21 @@ def rgb2gray(rgb):
     '''
     return numpy.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
+def upca_to_ean13(upca):
+    '''
+    Takes unicode UPC-A. 
+    Returns unicode EAN-13
+    '''
+    # Check length and type of ean8
+    if len(upca)!=12:
+        raise ValueError("full UPC-A should be of length 12")
+    else:
+        try:
+            upca=int(upca)
+        except ValueError as e:
+            raise ValueError('UPC-A should be numerical digits') from e
+    return '{0:013d}'.format(upca)
+
 def ean8_to_ean13(ean8):
     '''
     Takes unicode EAN-8. 
@@ -25,12 +40,12 @@ def ean8_to_ean13(ean8):
     '''
     # Check length and type of ean8
     if len(ean8)!=8:
-        raise ValueError("EAN-8 should be of length 8 (without check digit)")
+        raise ValueError("EAN-8 should be of length 8")
     else:
         try:
             ean8=int(ean8)
         except ValueError as e:
-            raise ValueError('EAN-8 should be unicode numerical digits') from e
+            raise ValueError('EAN-8 should be numerical digits') from e
     return '{0:013d}'.format(ean8)
 
 
@@ -47,12 +62,12 @@ def upca_get_check_digit(upca):
         try:
             digits = [int(d) for d in upca]
         except ValueError as e:
-            raise ValueError("UPC-A should be unicode numerical digits") from e
+            raise ValueError("UPC-A should be  numerical digits") from e
     elif len(upca)==12:
         try:
             digits = [int(d) for d in upca[0:-1]]
         except ValueError as e:
-            raise ValueError("UPC-A should be unicode numerical digits") from e
+            raise ValueError("UPC-A should be  numerical digits") from e
     else:
         raise ValueError("UPC-A should be of length 11 (without check digit)")
 
@@ -81,7 +96,7 @@ def upca_is_valid(upca):
         try:
             digits = [int(d) for d in upca]
         except ValueError as e:
-            raise ValueError("UPC-A should be unicode numerical digits") from e
+            raise ValueError("UPC-A should be  numerical digits") from e
         odd_digits = digits[0::2]
         even_digits = digits[1::2]
         checksum = 0
@@ -110,7 +125,7 @@ def upce_2_upca(upc_e):
     try:
         int(upc_e)
     except ValueError as e:
-        raise ValueError("UPC-E should be unicode numerical digits") from e
+        raise ValueError("UPC-E should be  numerical digits") from e
     # If the first digit of UPC-E is not 0
     if upc_e[0] != '0':
         raise ValueError("First digit of UPC-E should be zero(0)")

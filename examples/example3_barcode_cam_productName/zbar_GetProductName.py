@@ -19,57 +19,84 @@ Note: http://www.makebarcode.com -- Nice website to learn Barcodes
 import zbar
 import zbar.misc
 import numpy
-from scipy.misc import *
-import os
 
+import time
 import pygame
 import pygame.camera
-import time
-from pygame.locals import *
+import pygame.image
+import pygame.surfarray
 
 import requests
 import json
 
-#-------------------------------------------------------------------------
+def get_image_array_from_cam(cam_name, cam_resolution):
+    '''
+    Gets a image ndarray from webcam using pygame
+    '''
+    pygame.init()
+    pygame.camera.init()
+    pygame.camera.list_cameras()
+    # Cam 
+    cam = pygame.camera.Camera(cam_name, cam_resolution)
+
+    screen = pygame.display.set_mode(cam.get_size())
+    print('Get a pic of barcode. If pic doesnot look good, then press enter at terminal. \
+           Camera will take another pic. When done press q and enter to quit camera mode')
+    while True:
+        cam.start()
+        time.sleep(0.5)  # You might need something higher in the beginning
+        pygame_screen_image = cam.get_image()
+        screen.blit(pygame_screen_image,(0,0))
+        pygame.display.flip() # update the display
+        cam.stop()
+        if input() == 'q':
+            break
+
+    pygame.display.quit()
+
+    image_ndarray=pygame.surfarray.array3d(pygame_screen_image)
+
+    if(len(image_ndarray.shape)<3):
+        #Image is grayscale
+        pass
+    elif len(image_ndarray.shape)==3:
+        #Image is RGB
+        image_ndarray = zbar.misc.rgb2gray(image_ndarray)
+    else:
+        raise ValueError('Please enter a Greyscale or RGB image.')
+
+    image_ndarray = image_ndarray.astype(numpy.uint8)
+    return image_ndarray
+
+
+#----------------------------------------------------------------------------------
 # Get the pic
-#-------------------------------------------------------------------------
-# This might vary depending on your PC. Try to use a good camera. 
+# To get pic from cam or video, packages like opencv or simplecv can also be used.
+#----------------------------------------------------------------------------------
+
+# Cam name might vary depending on your PC. Try to use a good camera. 
 # Laptop builtin Webcam sometimes doesnot work good.
 cam_name='/dev/video1'  
+cam_resolution=(640,480)      # A general cam resolution
 
-pygame.init()
-pygame.camera.init()
-pygame.camera.list_cameras()
-# Cam 
-cam = pygame.camera.Camera(cam_name, (640, 480))
-
-screen = pygame.display.set_mode(cam.get_size())
-print('Get a pic of barcode. If pic doesnot look good, then press enter at terminal. \
-       Camera will take another pic. When done press q and enter to quit camera mode')
-while True:
-    cam.start()
-    time.sleep(0.5)  # You might need something higher in the beginning
-    img = cam.get_image()
-    screen.blit(img,(0,0))
-    pygame.display.flip() # update the display
-    cam.stop()
-    if input() == 'q':
-        break
-
-pygame.image.save(img, "barcode.jpg")
-pygame.display.quit()
+img_ndarray=get_image_array_from_cam(cam_name, cam_resolution)
 
 #-------------------------------------------------------------------------
 # Read the Barcode
 #-------------------------------------------------------------------------
+
+# Detect all
 scanner = zbar.Scanner()
 products=None
-results =scanner.scan_from_image('barcode.jpg')
+
+results = scanner.scan(img_ndarray)
 if results==[]:
     print("No Barcode found.")
 else:
+    # Since, scan returns as namedtuple which is immutable, so change it to dict
     for result in results:
-        print(result.type, result.data, result.quality)
+        # By default zbar returns barcode data as byte array, so decoding byte array as utf-8
+        print(result.type, result.data.decode("utf-8"), result.quality)
         #print(result.type, result.data, result.quality,result.position)
         #print("{}".format(results))
     products=results
@@ -142,13 +169,12 @@ def get_product_name(product_id):
         print('error requesting API')
 
 if products:
-    
     for product in products:
-        if product.type == 'ISBN-10':
-            get_book_name(product.data)
+        if product.type == 'ISBN-10' or product.type == 'ISBN-13':
+            get_book_name(product.data.decode("utf-8"))
 
         elif product.type == 'UPC-E':
-            converted_id=zbar.misc.upce2upca(product.data)
+            converted_id=zbar.misc.upce2upca(product.data.decode("utf-8"))
             get_product_name(converted_id)
         else:
-            get_product_name(product.data)
+            get_product_name(product.data.decode("utf-8"))

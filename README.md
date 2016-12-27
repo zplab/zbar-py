@@ -25,26 +25,6 @@ Then Do
 
 Simple examples are mentioned below. More examples can be found in examples directory.
 
-* With image file. Reads most types of Barcodes
-
-```python
-import zbar
-scanner = zbar.Scanner()
-results = scanner.scan_from_image('image_filename.png')
-for result in results:
-    print(result.type, result.data, result.quality, result.position)
-```
-
-* With image file. Reads EAN-13 only
-
-```python
-import zbar
-scanner = zbar.Scanner([('ZBAR_EAN13', 'ZBAR_CFG_ENABLE', 1),('ZBAR_EAN13', 'ZBAR_CFG_POSITION', 1)])
-results = scanner.scan_from_image('image_filename.png')
-for result in results:
-    print(result.type, result.data, result.quality, result.position)
-```
-
 * With 2D numpy array. Reads most types of Barcode
 
 ```python
@@ -59,15 +39,10 @@ for result in results:
 * UPC-A Barcode checksum validity test
 
 ```python
-import zbar
 import zbar.misc
-scanner = zbar.Scanner()
-results = scanner.scan_from_image('image_filename.png')
-for result in results:
-    print(result.type, result.data, result.quality, result.position)
 
-''' if all successful, then UPC-A barcode is in result.data'''
-valid = zbar.misc.upca_is_valid(result.data)
+''' if UPC-A utf-8-encoded is passed as upca'''
+valid = zbar.misc.upca_is_valid(upca)
 if valid == True:
     print('code is valid')
 elif valid == False:
@@ -75,4 +50,3 @@ elif valid == False:
 elif valid == None:
     print('Barcode is not read properly')
 ```
-

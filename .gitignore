@@ -55,9 +55,3 @@ docs/_build/
 
 # PyBuilder
 target/
-
-# Image files
-zbar_testing/3_zbar_cam_productName/*.jpg
-zbar_testing/3_zbar_cam_productName/*.png
-zbar_testing/2_Testing_barcode_cam/*.jpg
-zbar_testing/2_Testing_barcode_cam/*.png
