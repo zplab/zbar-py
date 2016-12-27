@@ -1,5 +1,5 @@
-from setuptools import setup
-from setuptools.extension import Extension
+from distutils.core import setup
+from distutils.extension import Extension
 import os
 import ctypes
 import ctypes.util
@@ -54,13 +54,12 @@ zbar = Extension('zbar._zbar',
 )
 
 setup(name='zbar-py',
-        version='1.2rc1',
+        version='1.0',
         description='zbar package',
         url='https://github.com/zplab/zbar-py',
         author='Zachary Pincus',
         author_email='zpincus@gmail.com',
         ext_modules=[zbar],
         packages=['zbar'],
-        install_requires=['numpy'],
         license='MIT',)
 
