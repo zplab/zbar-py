@@ -138,8 +138,8 @@ class Scanner(object):
         self._scanner = _ZB.zbar_image_scanner_create()
         if config is None:
             config = []
-        config.append(('ZBAR_NONE', 'ZBAR_CFG_ENABLE', 1))
-        config.append(('ZBAR_NONE', 'ZBAR_CFG_POSITION', 1))
+            config.append(('ZBAR_NONE', 'ZBAR_CFG_ENABLE', 1))
+            config.append(('ZBAR_NONE', 'ZBAR_CFG_POSITION', 1))
         for symbol_type, config_type, value in config:
             _ZB.zbar_image_scanner_set_config(self._scanner, ZBAR_SYMBOLS[symbol_type], ZBAR_CONFIGS[config_type], value)
 
