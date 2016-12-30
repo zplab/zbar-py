@@ -6,7 +6,7 @@
 #
 # Instructions:
 # 1) Set the cam source '/dev/video0'
-# 2) Get a pic. If pic doesnot look good, then press enter at terminal. 
+# 2) Get a pic. If pic doesnot look good, then press enter at terminal.
 #    Camera will take another pic. When done press q and enter to quit camera mode
 # 3) You will get reading on the terminal
 #
@@ -23,13 +23,10 @@ import pygame.image
 import pygame.surfarray
 
 def get_image_array_from_cam(cam_name, cam_resolution):
-    '''
-    Gets a image ndarray from webcam using pygame
-    '''
+    '''Get animage ndarray from webcam using pygame.'''
     pygame.init()
     pygame.camera.init()
     pygame.camera.list_cameras()
-    # Cam 
     cam = pygame.camera.Camera(cam_name, cam_resolution)
 
     screen = pygame.display.set_mode(cam.get_size())
@@ -39,7 +36,7 @@ def get_image_array_from_cam(cam_name, cam_resolution):
         cam.start()
         time.sleep(0.5)  # You might need something higher in the beginning
         pygame_screen_image = cam.get_image()
-        screen.blit(pygame_screen_image,(0,0))
+        screen.blit(pygame_screen_image, (0,0))
         pygame.display.flip() # update the display
         cam.stop()
         if input() == 'q':
@@ -47,18 +44,11 @@ def get_image_array_from_cam(cam_name, cam_resolution):
 
     pygame.display.quit()
 
-    image_ndarray=pygame.surfarray.array3d(pygame_screen_image)
+    image_ndarray = pygame.surfarray.array3d(pygame_screen_image)
 
-    if(len(image_ndarray.shape)<3):
-        #Image is grayscale
-        pass
-    elif len(image_ndarray.shape)==3:
-        #Image is RGB
+    if len(image_ndarray.shape) == 3:
         image_ndarray = zbar.misc.rgb2gray(image_ndarray)
-    else:
-        raise ValueError('Please enter a Greyscale or RGB image.')
 
-    image_ndarray = image_ndarray.astype(numpy.uint8)
     return image_ndarray
 
 
@@ -67,12 +57,11 @@ def get_image_array_from_cam(cam_name, cam_resolution):
 # To get pic from cam or video, packages like opencv or simplecv can also be used.
 #----------------------------------------------------------------------------------
 
-# Cam name might vary depending on your PC. Try to use a good camera. 
-# Laptop builtin Webcam sometimes doesnot work good.
-cam_name='/dev/video1'  
+# Cam name might vary depending on your PC.
+cam_name='/dev/video1'
 cam_resolution=(640,480)      # A general cam resolution
 
-img_ndarray=get_image_array_from_cam(cam_name, cam_resolution)
+img_ndarray = get_image_array_from_cam(cam_name, cam_resolution)
 
 #-------------------------------------------------------------------------
 # Read the Barcode
@@ -86,5 +75,5 @@ if results==[]:
     print("No Barcode found.")
 else:
     for result in results:
-        # By default zbar returns barcode data as byte array, so decoding byte array as utf-8
-        print(result.type, result.data.decode("utf-8"), result.quality)
+        # By default zbar returns barcode data as byte array, so decode byte array as ascii
+        print(result.type, result.data.decode("ascii"), result.quality)

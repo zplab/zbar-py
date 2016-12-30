@@ -1,5 +1,12 @@
-from distutils.core import setup
-from distutils.extension import Extension
+try:
+    import setuptools
+    from setuptools import setup, Extension
+    setuptools_opts = dict(install_requires='numpy')
+except ImportError:
+    from distutils.core import setup
+    from distutils.extension import Extension
+    setuptools_opts = {}
+
 import os
 import ctypes
 import ctypes.util
@@ -33,7 +40,7 @@ def has_libc_iconv():
     return hasattr(libc, 'iconv')
 
 # don't try to link to standalone iconv library if it's already in libc
-# (iconv is in glibc, but  on OS X one needs a stanalone libiconv)
+# (iconv is in glibc, but on OS X one needs a stanalone libiconv)
 LIBS = [] if has_libc_iconv() else ['iconv']
 
 zbar = Extension('zbar._zbar',
@@ -53,13 +60,21 @@ zbar = Extension('zbar._zbar',
     libraries=LIBS
 )
 
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+    long_description = open('README.md').read()
+
 setup(name='zbar-py',
-        version='1.0',
-        description='zbar package',
-        url='https://github.com/zplab/zbar-py',
-        author='Zachary Pincus',
-        author_email='zpincus@gmail.com',
-        ext_modules=[zbar],
-        packages=['zbar'],
-        license='MIT',)
+      version='1.0',
+      description='zbar package',
+      url='https://github.com/zplab/zbar-py',
+      author='Zachary Pincus',
+      author_email='zpincus@gmail.com',
+      ext_modules=[zbar],
+      packages=['zbar'],
+      license='MIT',
+      long_description=long_description,
+      **setuptools_opts)
 

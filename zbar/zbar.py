@@ -63,8 +63,7 @@ def load_zbar():
                                '\n\n'.join(err_txt))
         else:
             # No errors, because no potential libraries found at all!
-            raise RuntimeError('Could not find a zbar library in any of:\n' +
-                               '\n'.join(lib_dirs))
+            raise RuntimeError('Could not find a zbar library in ' + __file__)
 
     return zbar
 
@@ -133,13 +132,35 @@ Symbol = collections.namedtuple('Symbol', ['type', 'data', 'quality', 'position'
 
 class Scanner(object):
     def __init__(self, config=None):
-        """config: None or list of (symbol_type, coonfig_type, value) triples.
+        """Create a barcode-scanner object.
+
+        By default, scanning for all barcode types is enabled, and reporting of
+        their locations is enabled. This can be controlled by the config parameter.
+
+        Parameters:
+            config: None or a list of (symbol_type, config_type, value) triples.
+                * symbol_type must be one of ZBAR_SYMBOLS, which refers to a
+                  class of barcodes. ZBAR_NONE will cause the configuration
+                  option to apply to all barcode types.
+                * config_type must be one of ZBAR_CONFIGS, defined in zbar.h.
+                  Of particular interest are ZBAR_CFG_ENABLE (enable specific
+                  symbol type), ZBAR_CFG_ADD_CHECK (enable check-digit
+                  verification) and ZBAR_CFG_MIN_LEN and ZBAR_CFG_MAX_LEN (only
+                  return decoded barcodes with the specified data length).
+                  NB: Enabling/disabling specific barcode types is complex and
+                  not particularly well supported by zbar (some barcode types
+                  will be scanned-for by default unless disabled; some require
+                  specific enablement; some types like ISBN and UPC that are
+                  subclasses of EAN barcodes require EAN to also be enabled).
+                  Thus is is STRONGLY recommended to use the default config
+                  and filter for barcode types after the fact.
+                * value should be 1 for boolean options, or an integer for the
+                  other options.
         """
         self._scanner = _ZB.zbar_image_scanner_create()
         if config is None:
-            config = []
-            config.append(('ZBAR_NONE', 'ZBAR_CFG_ENABLE', 1))
-            config.append(('ZBAR_NONE', 'ZBAR_CFG_POSITION', 1))
+            config = [('ZBAR_NONE', 'ZBAR_CFG_ENABLE', 1), ('ZBAR_NONE', 'ZBAR_CFG_POSITION', 1)]
+
         for symbol_type, config_type, value in config:
             _ZB.zbar_image_scanner_set_config(self._scanner, ZBAR_SYMBOLS[symbol_type], ZBAR_CONFIGS[config_type], value)
 
@@ -149,11 +170,19 @@ class Scanner(object):
 
     def scan(self, image):
         """Scan an image and return a list of barcodes identified.
-        Each barcode is a Symbol named-tuple, with 'type', 'data', 'quality',
-        and 'position' attributes. 'type' refers to the barcode's type (e.g.
-        'QR-Code'), 'data' is a bytes instance containing the barcode payload,
-        'quality' is a numerical score, and 'position' is a list of (x, y)
-        indices into the image that define the barcode's location.
+
+        Parameters:
+            image: must be a 2-dimensional numpy array of dtype uint8.
+
+        Returns: list of Symbol namedtuples.
+
+        Each Symbol has 'type', 'data', 'quality', and 'position' attributes.
+            * 'type' refers to the barcode's type (e.g. 'QR-Code')
+            * 'data' is a bytes instance containing the barcode payload
+            * 'quality' is a numerical score
+            * 'position' is either an empty list (if position recording was
+               disabled), or a list of (x, y) indices into the image that define
+               the barcode's location.
         """
         image = numpy.asarray(image)
         if not image.dtype == numpy.uint8 and image.ndim == 2:
@@ -168,7 +197,7 @@ class Scanner(object):
         symbol = _ZB.zbar_image_scanner_first_symbol(self._scanner)
         while(symbol):
             sym_type = _ZB.zbar_symbol_get_type(symbol)
-            sym_name = str(_ZB.zbar_get_symbol_name(sym_type), 'ascii')
+            sym_name = _ZB.zbar_get_symbol_name(sym_type).decode('ascii')
             sym_data_ptr = _ZB.zbar_symbol_get_data(symbol)
             sym_data_len = _ZB.zbar_symbol_get_data_length(symbol)
             sym_data = ctypes.string_at(sym_data_ptr, sym_data_len)
