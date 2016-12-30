@@ -2,6 +2,7 @@
 
 ## Introduction
 Author: [Zachary Pincus](http://zplab.wustl.edu) <zpincus@gmail.com>
+
 Contributions: Rounak Singh <rounaksingh17@gmail.com> (example code and zbar.misc).
 
 zbar-py is a module (compatible with both Python 2.7 and 3+) that provides an interface to the [zbar](http://zbar.sourceforge.net) bar-code reading library, which can read most barcode formats as well as QR codes. Input images must be 2D numpy arrays of type uint8 (i.e. 2D greyscale images).
@@ -31,6 +32,7 @@ for result in results:
 ```
 
 * Scan for UPC-A barcodes and perform checksum validity test:
+
 ```python
 import zbar
 import zbar.misc

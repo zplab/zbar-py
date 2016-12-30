@@ -67,7 +67,7 @@ except (IOError, ImportError):
     long_description = open('README.md').read()
 
 setup(name='zbar-py',
-      version='1.0',
+      version='1.0.4',
       description='zbar package',
       url='https://github.com/zplab/zbar-py',
       author='Zachary Pincus',
