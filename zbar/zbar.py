@@ -23,11 +23,27 @@
 # Authors: Zach Pincus
 
 import ctypes
-import numpy
 import sys
 import os.path
 import glob
 import collections
+
+import pkg_resources
+
+try:
+    pkg_resources.get_distribution('numpy')
+except pkg_resources.DistributionNotFound:
+    HAS_NUMPY = False
+else:
+    HAS_NUMPY = True
+
+try:
+    pkg_resources.get_distribution('PIL')
+except pkg_resources.DistributionNotFound:
+    HAS_PIL = False
+else:
+    HAS_PIL = True
+
 
 __all__ = ['ZBAR_SYMBOLS', 'ZBAR_CONFIGS', 'Scanner', 'Symbol']
 
@@ -184,14 +200,21 @@ class Scanner(object):
                disabled), or a list of (x, y) indices into the image that define
                the barcode's location.
         """
-        image = numpy.asarray(image)
-        if not image.dtype == numpy.uint8 and image.ndim == 2:
-            raise ValueError('Image must be 2D uint8 type')
-        if image.flags.c_contiguous:
-            height, width = image.shape
-        else:
-            image = numpy.asfortranarray(image)
-            width, height = image.shape
+
+        if HAS_NUMPY:
+            image = numpy.asarray(image)
+            if not image.dtype == numpy.uint8 and image.ndim == 2:
+                raise ValueError('Image must be 2D uint8 type')
+            if image.flags.c_contiguous:
+                height, width = image.shape
+            else:
+                image = numpy.asfortranarray(image)
+                width, height = image.shape
+
+        elif HAS_PIL:
+            image = image.tobytes()
+            width, height = image.width, image.height
+
         num_symbols = _ZB.zbar_scan_image(self._scanner, width, height, image.ctypes.data)
         symbols = []
         symbol = _ZB.zbar_image_scanner_first_symbol(self._scanner)
