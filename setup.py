@@ -1,3 +1,12 @@
+try:
+    import setuptools
+    from setuptools import setup, Extension
+    setuptools_opts = {}
+except ImportError:
+    from distutils.core import setup
+    from distutils.extension import Extension
+    setuptools_opts = {}
+
 import os
 import ctypes
 import ctypes.util
