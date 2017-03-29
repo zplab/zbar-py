@@ -38,7 +38,7 @@ else:
     HAS_NUMPY = True
 
 try:
-    pkg_resources.get_distribution('PIL')
+    pkg_resources.get_distribution('pillow')
 except pkg_resources.DistributionNotFound:
     HAS_PIL = False
 else:
@@ -210,12 +210,15 @@ class Scanner(object):
             else:
                 image = numpy.asfortranarray(image)
                 width, height = image.shape
+            num_symbols = _ZB.zbar_scan_image(self._scanner, width, height, image.ctypes.data)
 
         elif HAS_PIL:
-            image = image.tobytes()
             width, height = image.width, image.height
+            num_symbols = _ZB.zbar_scan_image(self._scanner, width, height, image.tobytes())
 
-        num_symbols = _ZB.zbar_scan_image(self._scanner, width, height, image.ctypes.data)
+        else:
+            raise ImportError('Required numpy or pillow to handle images.')
+
         symbols = []
         symbol = _ZB.zbar_image_scanner_first_symbol(self._scanner)
         while(symbol):
