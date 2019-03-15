@@ -1,0 +1,5 @@
+include README.md
+include LICENSE
+include LICENSE-LGPL21.txt
+recursive-include examples *
+recursive-include Source *
