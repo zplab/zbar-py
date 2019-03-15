@@ -1,7 +1,7 @@
 try:
     import setuptools
     from setuptools import setup, Extension
-    setuptools_opts = dict(install_requires='numpy')
+    setuptools_opts = {}
 except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
