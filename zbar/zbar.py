@@ -188,10 +188,10 @@ class Scanner(object):
         if not image.dtype == numpy.uint8 and image.ndim == 2:
             raise ValueError('Image must be 2D uint8 type')
         if image.flags.c_contiguous:
-            height, width = image.shape
+            height, width, temp = image.shape
         else:
             image = numpy.asfortranarray(image)
-            width, height = image.shape
+            width, height, temp = image.shape
         num_symbols = _ZB.zbar_scan_image(self._scanner, width, height, image.ctypes.data)
         symbols = []
         symbol = _ZB.zbar_image_scanner_first_symbol(self._scanner)
